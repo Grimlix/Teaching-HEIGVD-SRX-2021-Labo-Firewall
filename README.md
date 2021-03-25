@@ -127,15 +127,33 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 
 | Adresse IP source | Adresse IP destination | Type | Port src | Port dst | Action |
 | :---:             | :---:                  | :---:| :------: | :------: | :----: |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-
+|          *        |        *               |  *   |   *      |    *     |Drop    |
+|192.168.100.0/24   |interface WAN           | UDP  | *        |53        |Accept  |
+|interface WAN      |192.168.100.0/24        | UDP  | 53       |*         |Accept  |
+|192.168.100.0/24   |interface WAN           | TCP  | *        |53        |Accept  |
+|interface WAN      |192.168.100.0/24        | TCP  | 53       |*         |Accept  |
+|192.168.100.0/24   |interface WAN           |ICMP echo request | *        |    *     |Accept |
+|192.168.100.0/24   |192.168.200.0/24        |ICMP echo request | *        |    *     |Accept |
+|192.168.200.0/24   |192.168.100.0/24        |ICMP echo request | *        |    *     |Accept |
+|interface WAN      |192.168.100.0/24        |ICMP echo reply   | *        |    *     |Accept |
+|192.168.200.0/24   |192.168.100.0/24        |ICMP echo reply   | *        |    *     |Accept |
+|192.168.100.0/24   |192.168.200.0/24        |ICMP echo reply   | *        |    *     |Accept |
+|192.168.100.0/24   |interface WAN           |TCP  | *         |80       |Accept   |
+|192.168.100.0/24   |interface WAN           |TCP  | *         |8080     |Accept   |
+|192.168.100.0/24   |interface WAN           |TCP  | *         |443      |Accept   |
+|interface WAN      |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |
+|192.168.100.0/24   |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |
+|192.168.100.3 (Client_in_LAN)   |192.168.200.3 (Server_in_DMZ) |TCP  | *         |22       |Accept   |
+|192.168.100.3 (Client_in_LAN)   |Firewall   |TCP  | *         |22       |Accept   |
 ---
+
+* Première ligne : Par defaut on block
+* 2,3,4,5 : On fait en sorte que l'interface LAN puisse  récupérer sur le WAN le DNS. 
+* 6-11 : On permet au reseau LAN de pingé internet. ICMP n'a pas de numéro de port. Il faudra donner le type de ICMP dans l'iptables. Il faut également la réponse. La même chose est-ce qu'il faut demander autoriser la réponse ?? Pour les PING, echo request et echo reply
+* 12, 13, 14 : On accepte LAN à HTTP et HTTPS
+* 15 et 16 : On donne l'accès au site du server DMZ à WAN et LAN
+* 16 : Le serveur de la DMZ peut être commandé à distance par ssh depuis votre ordinateur.
+* 17 : Donner accès au firewall depuis le user uniquement
 
 # Installation de l’environnement virtualisé
 
