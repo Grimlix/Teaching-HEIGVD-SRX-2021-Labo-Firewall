@@ -370,6 +370,26 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+
+iptables -P OUTPUT DROP
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+
+(echo request LAN => WAN)
+iptables -A FORWARD -p icmp --icmp-type 8 -s 192.168.100.0/24 -o eth0 -j ACCEPT
+(echo reply WAN => LAN)
+iptables -A FORWARD -p icmp -icmp-type 0 -i eth0 -d 192.168.100.0/24 -j ACCEPT
+
+(echo request LAN => DMZ) 
+iptables -A FORWARD -p icmp -icmp-type 8 -s 192.168.100.0/24 -d 192.168.200.0/24 -j ACCEPT
+(echo reply DMZ => LAN)
+iptables -A FORWARD -p icmp -icmp-type 0 -s 192.168.200.0/24 -d 192.168.100.0/24 -j ACCEPT
+
+(echo request DMZ => LAN)
+iptables -A FORWARD -p icmp -icmp-type 8 -s 192.168.200.0/24 -d 192.168.100.0/24 -j ACCEPT
+(echo reply LAN => DMZ)
+iptables -A FORWARD -p icmp -icmp-type 0 -s 192.168.100.0/24 -d 192.168.200.0/24 -j ACCEPT
+
 ```
 ---
 
@@ -395,6 +415,10 @@ traceroute 8.8.8.8
 ---
 **LIVRABLE : capture d'écran du traceroute et de votre ping vers l'Internet. Il ne devrait pas y avoir des _Redirect Host_ dans les réponses au ping !**
 
+![](./figures/ping4.png)
+
+![](./figures/traceroute1.png)
+
 ---
 
 <ol type="a" start="3">
@@ -403,19 +427,21 @@ traceroute 8.8.8.8
 </ol>
 
 
+C'est de la merde son truc ?? de Client_in_LAN à Client LAN ? J'pense il a inversé...
+
 | De Client\_in\_LAN à | OK/KO | Commentaires et explications |
 | :---                 | :---: | :---                         |
 | Interface DMZ du FW  |       |                              |
 | Interface LAN du FW  |       |                              |
-| Client LAN           |       |                              |
-| Serveur WAN          |       |                              |
+| Serveur DMZ          |  OK     | Comme souhaité                             |
+| Serveur WAN          |  OK     | Comme souhaité                             |
 
 
 | De Server\_in\_DMZ à | OK/KO | Commentaires et explications |
 | :---                 | :---: | :---                         |
 | Interface DMZ du FW  |       |                              |
 | Interface LAN du FW  |       |                              |
-| Serveur DMZ          |       |                              |
+| Client LAN           |       |                              |
 | Serveur WAN          |       |                              |
 
 
