@@ -125,35 +125,38 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 
 **LIVRABLE : Remplir le tableau**
 
-| Adresse IP source | Adresse IP destination | Type | Port src | Port dst | Action |
-| :---:             | :---:                  | :---:| :------: | :------: | :----: |
-|          *        |        *               |  *   |   *      |    *     |Drop    |
-|192.168.100.0/24   |interface WAN           | UDP  | *        |53        |Accept  |
-|interface WAN      |192.168.100.0/24        | UDP  | 53       |*         |Accept  |
-|192.168.100.0/24   |interface WAN           | TCP  | *        |53        |Accept  |
-|interface WAN      |192.168.100.0/24        | TCP  | 53       |*         |Accept  |
-|192.168.100.0/24   |interface WAN           |ICMP echo request | *        |    *     |Accept |
-|192.168.100.0/24   |192.168.200.0/24        |ICMP echo request | *        |    *     |Accept |
-|192.168.200.0/24   |192.168.100.0/24        |ICMP echo request | *        |    *     |Accept |
-|interface WAN      |192.168.100.0/24        |ICMP echo reply   | *        |    *     |Accept |
-|192.168.200.0/24   |192.168.100.0/24        |ICMP echo reply   | *        |    *     |Accept |
-|192.168.100.0/24   |192.168.200.0/24        |ICMP echo reply   | *        |    *     |Accept |
-|192.168.100.0/24   |interface WAN           |TCP  | *         |80       |Accept   |
-|192.168.100.0/24   |interface WAN           |TCP  | *         |8080     |Accept   |
-|192.168.100.0/24   |interface WAN           |TCP  | *         |443      |Accept   |
-|interface WAN      |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |
-|192.168.100.0/24   |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |
-|192.168.100.3 (Client_in_LAN)   |192.168.200.3 (Server_in_DMZ) |TCP  | *         |22       |Accept   |
-|192.168.100.3 (Client_in_LAN)   |Firewall   |TCP  | *         |22       |Accept   |
+| Adresse IP source | Adresse IP destination | Type | Port src | Port dst | Action | Flag | Comments |
+| :---:             | :---:                  | :---:| :------: | :------: | :----: | :--: | :------: |
+|          *        |        *               |  *   |   *      |    *     |Drop    |   -  | Defaut   |
+|192.168.100.0/24   |interface WAN           | UDP  | *        |53        |Accept  |   -  | DNS sortant |
+|interface WAN      |192.168.100.0/24        | UDP  | 53       |*         |Accept  |   -  | DNS entrant |
+|192.168.100.0/24   |interface WAN           | TCP  | *        |53        |Accept  |   -  | DNS sortant |
+|interface WAN      |192.168.100.0/24        | TCP  | 53       |*         |Accept  |   -  | DNS entrant |
+|192.168.100.0/24   |interface WAN           |ICMP  | *        |    *     |Accept |   -  | ICMP echo request |
+|192.168.100.0/24   |192.168.200.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo request |
+|192.168.200.0/24   |192.168.100.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo request |
+|interface WAN      |192.168.100.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo reply   |
+|192.168.200.0/24   |192.168.100.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo reply   |
+|192.168.100.0/24   |192.168.200.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo reply   |
+|192.168.100.0/24   |interface WAN           |TCP  | *         |80       |Accept   |  -  | HTTP sortant      |
+|192.168.100.0/24   |interface WAN           |TCP  | *         |8080     |Accept   |  -  | HTTP sortant      |
+|192.168.100.0/24   |interface WAN           |TCP  | *         |443      |Accept   |  -  | HTTPS sortant     |
+|interface WAN   |192.168.100.0/24           |TCP  | 80         |*       |Accept   |  ACK  | HTTP entrant (statefull) |
+|interface WAN   |192.168.100.0/24           |TCP  | 8080         |*     |Accept   |  ACK  | HTTP entrant (statefull) |
+|interface WAN   |192.168.100.0/24           |TCP  | 443         |*      |Accept   |  ACK  | HTTPS entrant (statefull) |
+|interface WAN      |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |  -  | Server DMZ atteignable  |
+|192.168.100.0/24   |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |  -  | Server DMZ atteignable  |
+|192.168.200.3 (Server_in_DMZ)      |interface WAN |TCP  | 80         |*       |Accept   |  -  | Server DMZ réponse  |
+|192.168.200.3 (Server_in_DMZ)   |192.168.100.0/24 |TCP  | 80         |*       |Accept   |  -  | Server DMZ réponse  |
+|192.168.100.3 (Client_in_LAN)   |192.168.200.3 (Server_in_DMZ) |TCP  |*         |22       |Accept   |  -  | ssh sortant |
+|192.168.100.3 (Client_in_LAN)   |Firewall   |TCP  | *         |22       |Accept   |  -  | ssh sortant |
+|192.168.200.3 (Server_in_DMZ)   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   |  -  | ssh entrant |
+|Firewall   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   |  -  | ssh entrant |
 ---
 
-* Première ligne : Par defaut on block
-* 2,3,4,5 : On fait en sorte que l'interface LAN puisse  récupérer sur le WAN le DNS. 
-* 6-11 : On permet au reseau LAN de pingé internet. ICMP n'a pas de numéro de port. Il faudra donner le type de ICMP dans l'iptables. Il faut également la réponse. La même chose est-ce qu'il faut demander autoriser la réponse ?? Pour les PING, echo request et echo reply
-* 12, 13, 14 : On accepte LAN à HTTP et HTTPS
-* 15 et 16 : On donne l'accès au site du server DMZ à WAN et LAN
-* 16 : Le serveur de la DMZ peut être commandé à distance par ssh depuis votre ordinateur.
-* 17 : Donner accès au firewall depuis le user uniquement
+
+Est-ce qu'il faut toujours une réponse ?? en ssh par exemple ??
+
 
 # Installation de l’environnement virtualisé
 
@@ -431,18 +434,18 @@ C'est de la merde son truc ?? de Client_in_LAN à Client LAN ? J'pense il a inve
 
 | De Client\_in\_LAN à | OK/KO | Commentaires et explications |
 | :---                 | :---: | :---                         |
-| Interface DMZ du FW  |       |                              |
-| Interface LAN du FW  |       |                              |
+| Interface DMZ du FW  |  KO     | On est en DROP policy et on utilise du FORWARD donc pas accepté sur le FW                             |
+| Interface LAN du FW  |  KO     | On est en DROP policy et on utilise du FORWARD donc pas accepté sur le FW                             |
 | Serveur DMZ          |  OK     | Comme souhaité                             |
 | Serveur WAN          |  OK     | Comme souhaité                             |
 
 
 | De Server\_in\_DMZ à | OK/KO | Commentaires et explications |
 | :---                 | :---: | :---                         |
-| Interface DMZ du FW  |       |                              |
-| Interface LAN du FW  |       |                              |
-| Client LAN           |       |                              |
-| Serveur WAN          |       |                              |
+| Interface DMZ du FW  |       | On est en DROP policy et on utilise du FORWARD donc pas accepté sur le FW                             |
+| Interface LAN du FW  |       | On est en DROP policy et on utilise du FORWARD donc pas accepté sur le FW                             |
+| Client LAN           |  OK     | Comme souhaité                             |
+| Serveur WAN          |  KO     | Comme souhaité                             |
 
 
 ## Règles pour le protocole DNS
@@ -462,6 +465,8 @@ ping www.google.com
 
 **LIVRABLE : capture d'écran de votre ping.**
 
+![](./figures/ping5.png)
+
 ---
 
 * Créer et appliquer la règle adéquate pour que la **condition 1 du cahier des charges** soit respectée.
@@ -472,6 +477,13 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+
+iptables -A FORWARD -p udp -dport 53 -s 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -p tcp -dport 53 -s 192.168.100.0/24 -j ACCEPT
+
+iptables -A FORWARD -p udp -sport 53 -d 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -p tcp -sport 53 -d 192.168.100.0/24 -j ACCEPT
+
 ```
 
 ---
@@ -485,6 +497,8 @@ LIVRABLE : Commandes iptables
 
 **LIVRABLE : capture d'écran de votre ping.**
 
+![](./figures/ping6.png)
+
 ---
 
 <ol type="a" start="6">
@@ -496,6 +510,8 @@ LIVRABLE : Commandes iptables
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
+
+Par defaut nous avons la politique DROP sur le firewall. Et nous avions encore aucune règle sur le port 53. La résolution du nom en adresse IP était alors impossible.
 
 ---
 
