@@ -130,9 +130,9 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 | :---:             | :---:                  | :---:| :------: | :------: | :----: | :--: | :------: |
 |          *        |        *               |  *   |   *      |    *     |Drop    |   -  | Defaut   |
 |192.168.100.0/24   |interface WAN           | UDP  | *        |53        |Accept  |   -  | DNS sortant |
-|interface WAN      |192.168.100.0/24        | UDP  | 53       |*         |Accept  |   -  | DNS entrant |
+|interface WAN      |192.168.100.0/24        | UDP  | 53       |*         |Accept  | ACK  | DNS entrant |
 |192.168.100.0/24   |interface WAN           | TCP  | *        |53        |Accept  |   -  | DNS sortant |
-|interface WAN      |192.168.100.0/24        | TCP  | 53       |*         |Accept  |   -  | DNS entrant |
+|interface WAN      |192.168.100.0/24        | TCP  | 53       |*         |Accept  | ACK  | DNS entrant |
 |192.168.100.0/24   |interface WAN           |ICMP  | *        |    *     |Accept |   -  | ICMP echo request |
 |192.168.100.0/24   |192.168.200.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo request |
 |192.168.200.0/24   |192.168.100.0/24        |ICMP  | *        |    *     |Accept |   -  | ICMP echo request |
@@ -147,12 +147,12 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 |interface WAN   |192.168.100.0/24           |TCP  | 443         |*      |Accept   |  ACK  | HTTPS entrant (statefull) |
 |interface WAN      |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |  -  | Server DMZ atteignable  |
 |192.168.100.0/24   |192.168.200.3 (Server_in_DMZ) |TCP  | *         |80       |Accept   |  -  | Server DMZ atteignable  |
-|192.168.200.3 (Server_in_DMZ)      |interface WAN |TCP  | 80         |*       |Accept   |  -  | Server DMZ réponse  |
-|192.168.200.3 (Server_in_DMZ)   |192.168.100.0/24 |TCP  | 80         |*       |Accept   |  -  | Server DMZ réponse  |
+|192.168.200.3 (Server_in_DMZ)      |interface WAN |TCP  | 80         |*       |Accept   | ACK | Server DMZ réponse  |
+|192.168.200.3 (Server_in_DMZ)   |192.168.100.0/24 |TCP  | 80         |*       |Accept   | ACK | Server DMZ réponse  |
 |192.168.100.3 (Client_in_LAN)   |192.168.200.3 (Server_in_DMZ) |TCP  |*         |22       |Accept   |  -  | ssh sortant |
 |192.168.100.3 (Client_in_LAN)   |Firewall   |TCP  | *         |22       |Accept   |  -  | ssh sortant |
-|192.168.200.3 (Server_in_DMZ)   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   |  -  | ssh entrant |
-|Firewall   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   |  -  | ssh entrant |
+|192.168.200.3 (Server_in_DMZ)   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   | ACK | ssh entrant |
+|Firewall   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   | ACK | ssh entrant |
 
 
 ---
