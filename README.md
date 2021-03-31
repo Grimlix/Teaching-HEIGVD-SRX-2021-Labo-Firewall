@@ -157,10 +157,6 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 
 ---
 
-
-Est-ce qu'il faut toujours une réponse ?? en ssh par exemple ??
-
-
 # Installation de l’environnement virtualisé
 
 Ce chapitre indique comment installer l'environnement. Il se base sur des outils gratuits, téléchargeables sur Internet.
