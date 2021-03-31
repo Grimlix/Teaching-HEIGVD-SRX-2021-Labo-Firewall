@@ -600,6 +600,17 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+
+(LAN Client => DMZ Server)
+iptables -A FORWARD -p tcp -m conntrack --ctstate NEW,ESTABLISHED -s 192.168.100.3 -d 192.168.200.3 --dport 22 -j ACCEPT
+(DMZ Server => LAN Client)
+iptables -A FORWARD -p tcp -m conntrack --ctstate ESTABLISHED -s 192.168.200.3 --sport 22 -d 192.168.100.3 -j ACCEPT
+
+(LAN Client => Firewall)
+iptables -A INPUT -p tcp -m conntrack --ctstate NEW,ESTABLISHED -s 192.168.100.3 --dport 22 -j ACCEPT
+(Firewall => LAN Client)
+iptables -A OUTPUT -p tcp -m conntrack --ctstate ESTABLISHED --sport 22 -d 192.168.100.3 -j ACCEPT
+
 ```
 
 ---
@@ -614,6 +625,8 @@ ssh root@192.168.200.3
 
 **LIVRABLE : capture d'écran de votre connexion ssh.**
 
+![](./figures/ssh1.png)
+
 ---
 
 <ol type="a" start="9">
@@ -625,6 +638,7 @@ ssh root@192.168.200.3
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
+ssh établit une connexion encryptée et sûre du le réseau. Cela empêche aux "Man In The Middle" de récupérer des informations lors de spoofing.
 
 ---
 
@@ -638,6 +652,7 @@ ssh root@192.168.200.3
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
+Pour la sécurité d'un système on veut empêcher que si un attaquant s'empare d'une de nos machines qu'il puisse en récupérer plus avec. Si on n'utilise pas de règles avec état, si l'attaquant récupère le Server_in_DMZ par exemple il pourra directement se connecter en remote au Client. 
 
 ---
 
@@ -653,5 +668,7 @@ A présent, vous devriez avoir le matériel nécessaire afin de reproduire la ta
 ---
 
 **LIVRABLE : capture d'écran avec toutes vos règles.**
+
+![](./figures/iptablesfinal.png)
 
 ---
