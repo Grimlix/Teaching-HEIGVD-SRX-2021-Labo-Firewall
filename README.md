@@ -532,7 +532,20 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+
+(LAN => WAN)
+iptables -A FORWARD -p tcp -m conntrack --ctstate NEW,ESTABLISHED -s 192.168.100.0/24 --dport 80 -j ACCEPT
+iptables -A FORWARD -p tcp -m conntrack --ctstate NEW,ESTABLISHED -s 192.168.100.0/24 --dport 8080 -j ACCEPT
+iptables -A FORWARD -p tcp -m conntrack --ctstate NEW,ESTABLISHED -s 192.168.100.0/24 --dport 443 -j ACCEPT
+
+(WAN => LAN)
+iptables -A FORWARD -p tcp -m conntrack --ctstate ESTABLISHED -d 192.168.100.0/24 --sport 80 -j ACCEPT
+iptables -A FORWARD -p tcp -m conntrack --ctstate ESTABLISHED -d 192.168.100.0/24 --sport 8080 -j ACCEPT
+iptables -A FORWARD -p tcp -m conntrack --ctstate ESTABLISHED -d 192.168.100.0/24 --sport 443 -j ACCEPT
+
 ```
+
+![](./figures/wget.png)
 
 ---
 
@@ -544,6 +557,19 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+
+(WAN => DMZ Server)
+iptables -A FORWARD -p tcp -d 192.168.200.3 --dport 80 -j ACCEPT
+(LAN => DMZ Server)
+iptables -A FORWARD -p tcp -s 192.168.100.0/24 -d 192.168.200.3 --dport 80 -j ACCEPT
+
+(DMZ Server => WAN)
+iptables -A FORWARD -p tcp -s 192.168.200.3 --sport 80 -j ACCEPT
+(DMZ Server => LAN)
+iptables -A FORWARD -p tcp -s 192.168.200.3 --sport 80 -d 198.168.100.0/24 -j ACCEPT
+
+
+
 ```
 ---
 
@@ -555,6 +581,8 @@ LIVRABLE : Commandes iptables
 ---
 
 **LIVRABLE : capture d'écran.**
+
+![](./figures/wget2.png)
 
 ---
 
