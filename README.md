@@ -150,9 +150,9 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 |192.168.200.3 (Server_in_DMZ)      |interface WAN |TCP  | 80         |*       |Accept   | ACK | Server DMZ réponse  |
 |192.168.200.3 (Server_in_DMZ)   |192.168.100.0/24 |TCP  | 80         |*       |Accept   | ACK | Server DMZ réponse  |
 |192.168.100.3 (Client_in_LAN)   |192.168.200.3 (Server_in_DMZ) |TCP  |*         |22       |Accept   |  -  | ssh sortant |
-|192.168.100.3 (Client_in_LAN)   |Firewall   |TCP  | *         |22       |Accept   |  -  | ssh sortant |
+|192.168.100.3 (Client_in_LAN)   |192.168.100.2 (Firewall)   |TCP  | *         |22       |Accept   |  -  | ssh sortant |
 |192.168.200.3 (Server_in_DMZ)   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   | ACK | ssh entrant |
-|Firewall   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   | ACK | ssh entrant |
+|192.168.100.2 (Firewall)   |192.168.100.3 (Client_in_LAN)   |TCP  | 22         |*       |Accept   | ACK | ssh entrant |
 
 
 ---
